@@ -1,0 +1,118 @@
+{% extends 'base.html' %} {% load static %} {% block titulo %} Añadir Perfil {% endblock %} {% csrf_token %} {% block navbar_jefe_ventas %}
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:jefe_ventas' %}">Inicio</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:form_prod' %}">Inventario</a>
+</li>
+
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:form_employee' %}">Empleados</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:registro_empleados' %}">Registro de Empleados</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:sales_report' %}">Informe de Ventas</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:open_close' %}">Registro de Apertura y Cierre</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:sales_jefe_ventas' %}">Todas las Ventas</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:iva' %}">IVA</a>
+</li>
+{% load extras %} {% endblock %} {% block contenido %}
+
+<body>
+  <div class="container h-100">
+    <div class="position-static d-block p-4 py-md-5" tabindex="-1" role="dialog" id="modalSignin">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content rounded-4 shadow p-4">
+          <h5 class="fw-bold mb-0 fs-2 mb-3 text-center mt-2">Perfil de Cargo</h5>
+          <table class="table table-hover" id="table-profile">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for profile in profiles %}
+              <tr>
+                <td class="align-middle">{{ profile.id }}</td>
+                <td class="align-middle">{{ profile.name }}</td>
+                <td class="d-flex justify-content-center justify-content-end">
+                  <a class="delete-profile mx-3" href="{% url 'sisventas:delete_profile' profile.id %}">
+                    <img src="{% static '/img/trash3.svg' %}" />
+                  </a>
+                  <a class="edit-profile" href="{% url 'sisventas:edit_profile' profile.id %}">
+                    <img src="{% static '/img/pencil.svg' %}" />
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+
+            {% empty %}
+            <tr>
+              <td colspan="6">No hay Perfiles</td>
+            </tr>
+            {% endfor %}
+          </table>
+          <form method="post" id="profile-form">
+            {% csrf_token %}
+            <table class="table table-borderless">
+              <thead>
+                <tr>
+                  <th>Campo</th>
+                  <th>Valor</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for campo in form %}
+                <tr>
+                  <td class="align-middle">
+                    <label class="form-label"> {{ campo.label }}</label>
+                  </td>
+                  <td class="align-middle">
+                    <div class="input-profile">{{ campo }}</div>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            <div class="d-flex justify-content-center">
+              <div>
+                {% if edit_mode %}
+                <button type="submit" class="btn btn-success btn-sm mb-3 mx-2 update-profile">Actualizar Perfil</button>
+                {% else %}
+                <button type="submit" class="btn btn-success btn-sm mb-3 mx-2 add-profile">Ingresar Perfil</button>
+                {% endif %}
+              </div>
+              <div type="reset" value="reset" class="mx-2">
+                <a class="btn btn-danger btn-sm" id="reset-profile" href="{% url 'sisventas:profile' %}"> Limpiar Campos </a>
+              </div>
+            </div>
+          </form>
+          <div class="d-flex justify-content-start">
+            <a class="btn" onclick="goBack()">
+              <img src="{% static '/img/arrow-left-circle-fill.svg' %}" height="25px" width="25px" />
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    function goBack() {
+      window.history.back();
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="{% static 'js/confirmforms.js' %}"></script>
+</body>
+
+{% endblock %} ```

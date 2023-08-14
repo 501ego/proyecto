@@ -1,0 +1,110 @@
+{% extends 'base.html' %} {% load static %} {% block titulo %} Jefe de Ventas {% endblock %} {% csrf_token %} {% block navbar_jefe_ventas %}
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:jefe_ventas' %}">Inicio</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:form_prod' %}">Inventario</a>
+</li>
+
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:form_employee' %}">Empleados</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:registro_empleados' %}">Registro de Empleados</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:sales_report' %}">Informe de Ventas</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:open_close' %}">Registro de Apertura y Cierre</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:sales_jefe_ventas' %}">Todas las Ventas</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:iva' %}">IVA</a>
+</li>
+{% load extras %} {% endblock %} {% block contenido %}
+
+<div class="container py-4">
+  <div class="p-5 mb-4 mt-3 rounded-4 shadow">
+    <div class="container-fluid">
+      <h6 class="fw-bold mb-5 fs-2 text-center">Ventas Semanales y Control de jornada</h6>
+      <form method="post" id="inputfilters">
+        {% csrf_token %}
+        <div class="row mb-2 align-items-center justify-content-center d-flex">
+          <div class="col">
+            <div class="form-check">
+              <input type="radio" id="today" name="today" value="today" class="form-check-input" />
+              <label for="today">Hoy</label>
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-check">
+              <input type="radio" id="week" name="week" value="week" class="form-check-input" />
+              <label for="week">Esta semana</label>
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-check">
+              <input type="radio" id="month" name="month" value="month" class="form-check-input" />
+              <label for="month">Este Mes</label>
+            </div>
+          </div>
+          <div class="col-sm-7">
+            <a type="submit" value="Aplicar filtros" class="btn btn-dark btn-sm" onclick="checkInputs(event)">Aplicar filtros</a>
+          </div>
+        </div>
+      </form>
+      <div class="row">
+        <div class="col">
+          <table class="table table-hover" id="table-register">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>RUT</th>
+                <th>Nombre</th>
+                <th>Hora de inicio de sesión</th>
+                <th>Hora de cierre de sesión</th>
+                <th>Fecha</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% include 'register_list.html' %}
+            </tbody>
+          </table>
+          <div class="pagination justify-content-center">
+            <ul class="pagination pagination-sm">
+              {% if registers.has_previous %}
+              <li class="page-item">
+                <a class="page-link" href="?page=1">&laquo; first</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="?page={{ registers.previous_page_number }}">previous</a>
+              </li>
+              {% endif %}
+
+              <li class="page-item active" aria-current="page">
+                <span class="page-link"> Page {{ registers.number }} of {{ registers.paginator.num_pages }}. </span>
+              </li>
+
+              {% if registers.has_next %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ registers.next_page_number }}">next</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="?page={{ registers.paginator.num_pages }}">last &raquo;</a>
+              </li>
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{% static 'js/confirmmiscelaneo.js' %}"></script>
+  </div>
+</div>
+
+{% endblock %}

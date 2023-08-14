@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+{% load extras %}
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+      }
+
+      .text-center {
+        text-align: center;
+      }
+
+      .table {
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      th,
+      td {
+        text-align: left;
+        padding: 1px;
+      }
+
+      th {
+        background-color: #f2f2f2;
+      }
+
+      #custom-row {
+        width: 100%;
+        background-color: #f2f2f2 !important;
+      }
+
+      #custom-p {
+        text-align: right;
+      }
+    </style>
+    <title>Boleta</title>
+  </head>
+
+  <body>
+    <div class="text-center">
+      <h1>Bazar: Los monitos de la Nona</h1>
+      <p>Av. Los Heroes 123</p>
+      <p>Telefono: 123456789</p>
+    </div>
+    <hr />
+    <h2>Comprobante de venta: {{ documento }}</h2>
+    <table id="custom-row">
+      <th>Fecha: {{ fecha }}</th>
+      <th>Cliente: {{ cliente }}</th>
+      <th>Razón Social: {{ company }}</th>
+      <th>Giro: {{ giro }}</th>
+      <th>Numero: {{ numero }}</th>
+    </table>
+    <hr />
+    <br /><br />
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Precio</th>
+          <th>Cantidad</th>
+          <th>Subtotal</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in detalle %}
+        <tr>
+          <td>{{ item.id_product.name }}</td>
+          <td>$ {{ item.unit_price|clp }}</td>
+          <td>{{ item.product_quantity }}</td>
+          <td>$ {{ item.subtotal|clp }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      <br />
+    </table>
+    <h3 id="custom-p">Subtotal: ${{ subtotal|clp }}</h3>
+    <h3 id="custom-p">IVA: ${{ total_iva|clp }}</h3>
+    <h2 id="custom-p">Total: ${{ total|clp }}</h2>
+    <br /><br />
+    <p id="custom-p">Atendido por: {{ vendedor }}</p>
+  </body>
+</html>

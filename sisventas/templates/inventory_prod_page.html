@@ -1,0 +1,36 @@
+{% load static %} {% load extras %} {% for product in products %}
+<tr>
+  <th scope="row">{{ product.id }}</th>
+  <td>{{ product.name }}</td>
+  <td>{{ product.stock }}</td>
+  <td>
+    <span class="$">$</span>
+    <span class="price-value">{{ product.unit_price|clp }}</span>
+  </td>
+  <td>{{ product.add_date }}</td>
+  <td>{{ product.expiration_date }}</td>
+  <td>{{ product.is_hidden|yesno:"No disponible,Disponible" }}</td>
+  <td>
+    <a
+      class="confirm-delete"
+      href="{% url 'sisventas:prod_delete' product.id %}"
+      data-id="{{ product.id }}"
+    >
+      <img src="{% static '/img/trash3.svg' %}" />
+    </a>
+  </td>
+  <td>
+    <a
+      class="confirm-edit"
+      href="{% url 'sisventas:prod_edit' product.id %}"
+      data-id="{{ product.id }}"
+    >
+      <img src="{% static '/img/pencil.svg' %}" />
+    </a>
+  </td>
+</tr>
+{% empty %}
+<tr>
+  <td colspan="6" class="text-center">No hay productos</td>
+</tr>
+{% endfor %}

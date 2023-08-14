@@ -1,0 +1,85 @@
+{% extends 'base.html' %} {% load static %} {% block titulo %} Añadir IVA {% endblock %} {% csrf_token %} {% block navbar_jefe_ventas %}
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:jefe_ventas' %}">Inicio</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:form_prod' %}">Inventario</a>
+</li>
+
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:form_employee' %}">Empleados</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:registro_empleados' %}">Registro de Empleados</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:sales_report' %}">Informe de Ventas</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:open_close' %}">Registro de Apertura y Cierre</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:sales_jefe_ventas' %}">Todas las Ventas</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:iva' %}">IVA</a>
+</li>
+{% load extras %} {% endblock %} {% block contenido %}
+
+<body>
+  <div class="container h-100">
+    <div class="position-static d-block p-4 py-md-5" tabindex="-1" role="dialog" id="modalSignin">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content rounded-4 shadow p-4">
+          <h5 class="fw-bold mb-0 fs-2 mb-5 text-center mt-2">Horario de apertura y cierre de caja</h5>
+          <table class="table table-hover">
+            <thead>
+              <th>ID</th>
+              <th>Hora apertura</th>
+              <th>Empleado Apertura</th>
+              <th>Hora cierre</th>
+              <th>Empleado Cierre</th>
+              <th>Fecha</th>
+            </thead>
+            {% for register in registers %}
+            <tbody>
+              <td>{{register.id }}</td>
+              <td>{{ register.opening_time }}</td>
+              <td>{{ register.opening_employee }}</td>
+              <td>{{ register.closing_time }}</td>
+              <td>{{ register.closing_employee }}</td>
+              <td>{{ register.date }}</td>
+            </tbody>
+            {% endfor %}
+          </table>
+          <div class="pagination justify-content-center">
+            <ul class="pagination pagination-sm">
+              {% if register.has_previous %}
+              <li class="page-item">
+                <a class="page-link" href="?page=1">&laquo; first</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="?page={{ register.previous_page_number }}">previous</a>
+              </li>
+              {% endif %}
+
+              <li class="page-item active" aria-current="page">
+                <span class="page-link"> Page {{ register.number }} of {{ register.paginator.num_pages }}. </span>
+              </li>
+
+              {% if register.has_next %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ register.next_page_number }}">next</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="?page={{ register.paginator.num_pages }}">last &raquo;</a>
+              </li>
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+{% endblock %}

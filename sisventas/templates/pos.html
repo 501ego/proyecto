@@ -1,0 +1,200 @@
+{% extends 'base.html' %} {% load static %} {% block titulo %} Sistema de ventas {%endblock %} {% load extras %} {% block navbar_vendedor %}
+<li class="nav-item">
+  <a class="nav-link active" aria-current="page" href="{% url 'sisventas:pos_system' %}"> Sistema de Venta </a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:form_client' %}">Clientes</a>
+</li>
+
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:sales_vendedor' %}">Ventas Empleado</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:refund' %}">Reembolso</a>
+</li>
+{% endblock %} {%block contenido %} {% csrf_token %}
+
+<main>
+  <div class="position-static d-block py-md-5">
+    <div class="modal-content rounded-4 shadow">
+      <div class="container p-4">
+        <div class="row">
+          <div class="col mx-3">
+            <h5 class="fw-bold mb-2 fs-2">Catálogo de Productos</h5>
+
+            <div class="search mb-3 border rounded-3">
+              <input type="text" class="form-control form-control" id="search-input-products" placeholder="Ingrese nombre del Producto" />
+            </div>
+            <table class="table table-hover border" id="table-Products">
+              <thead>
+                <tr class="">
+                  <th scope="col">Código</th>
+                  <th scope="col">Producto</th>
+                  <th scope="col">Precio</th>
+                  <th scope="col"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% include 'products_page.html' %}
+              </tbody>
+            </table>
+            <div class="pagination justify-content-center">
+              <ul class="pagination pagination-sm">
+                {% if products.has_previous %}
+                <li class="page-item">
+                  <a class="page-link" href="?page=1">&laquo; first</a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ products.previous_page_number }}">previous</a>
+                </li>
+                {% endif %}
+
+                <li class="page-item active" aria-current="page">
+                  <span class="page-link"> Page {{ products.number }} of {{ products.paginator.num_pages }}. </span>
+                </li>
+
+                {% if products.has_next %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ products.next_page_number }}">next</a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ products.paginator.num_pages }}">last &raquo;</a>
+                </li>
+                {% endif %}
+              </ul>
+            </div>
+          </div>
+          <div class="col mx-3">
+            <h5 class="fw-bold mb-2 fs-2">Detalle de Venta</h5>
+
+            <br /><br />
+            <div class="box mt-2">
+              <table class="table table-hover border" id="table-summary">
+                <thead>
+                  <tr class="">
+                    <th>Nombre</th>
+                    <th>Cantidad</th>
+                    <th>Precio</th>
+                    <th>Subtotal</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="sell-summary">
+                  {% if request.session.cart %} {% for item in request.session.cart.values %}
+                  <tr>
+                    <td class="align-middle">{{ item.name }}</td>
+                    <td class="align-middle">
+                      {% if item.product_id %}
+                      <form id="update_cart_{{ item.product_id }}" action="{% url 'sisventas:update_cart' item.product_id %}" method="post">
+                        {% csrf_token %}
+                        <input
+                          type="number"
+                          name="quantity"
+                          min="1"
+                          max="99"
+                          value="{{ item.quantity }}"
+                          class="form-control form-control-sm"
+                          onchange="this.form.submit()"
+                        />
+                      </form>
+                      {% endif %}
+                    </td>
+                    <td class="align-middle">
+                      <div class="d-flex">
+                        <span class="currency-symbol">$</span>
+                        <span class="price-value">{{ item.price|clp }}</span>
+                      </div>
+                    </td>
+                    <td class="align-middle">
+                      <div class="d-flex">
+                        <span class="currency-symbol">$</span>
+                        <span class="price-value">{{ item.subtotal|clp }}</span>
+                      </div>
+                    </td>
+                    {% if item.product_id %}
+                    <td class="align-middle">
+                      <a href="{% url 'sisventas:remove_cart' item.product_id %}" class="delete-item" data-id="{{ item.product_id }}">
+                        <img src="{% static '/img/trash3.svg' %}" />
+                      </a>
+                    </td>
+                    {% endif %}
+                  </tr>
+                  {% endfor %} {% else %}
+                  <tr>
+                    <td colspan="5">No hay productos en el carrito.</td>
+                  </tr>
+                  {% endif %}
+                </tbody>
+              </table>
+              <form id="saleForm" method="post" action="{% url 'sisventas:confirm_sale' %}">
+                {% csrf_token %}
+                <div class="fin-sell mb-2 d-flex flex-column flex-md-row justify-content-between align-items-center">
+                  <div class="btn-group justify-content-between" role="group">
+                    <div>
+                      <button type="submit" class="btn btn-sm btn-success d-flex align-items-center me-2">
+                        <span id="Confirm">Confirmar venta</span>
+                      </button>
+                    </div>
+                    <div id="cancel-sell">
+                      <a
+                        type="button"
+                        class="btn btn-sm btn-danger d-flex align-items-center"
+                        data-reset-url="{% url 'sisventas:clear_cart' %}"
+                        onclick="confirmCancel(this)"
+                      >
+                        <span id="Cancel">Cancelar venta</span>
+                      </a>
+                    </div>
+                  </div>
+                  <div class="form-check" id="document">
+                    {% for document in documents %}
+                    <input type="radio" id="{{ document.id }}" name="document_name" value="{{ document.name }}" />
+                    <label for="{{ document.id }}">{{ document.name }}</label>
+                    {% endfor %}
+                  </div>
+                  <div class="total">
+                    <h4>Total: $<span id="total-sell">{{ cart_total|clp }}</span></h4>
+                  </div>
+                </div>
+                <table class="table table-borderless">
+                  <td class="align-middle">
+                    <select class="form-select" name="client_rut" id="client">
+                      <option selected>Cliente</option>
+                      {% for client in clients %}
+                      <option value="{{ client.rut }}">{{ client.rut }} - {{ client.name }} {{ client.last_name }}</option>
+                      {% endfor %}
+                    </select>
+                  </td>
+                  <td class="align-middle">
+                    <a href="{% url 'sisventas:form_client' %}" id="add-client">
+                      <img src="{% static '/img/person-plus-fill.svg' %}" height="25px" width="25px" />
+                    </a>
+                  </td>
+                </table>
+                <table class="table table-summary table-borderless">
+                  <td class="align-middle">
+                    <h6 class="text-center">Número de Ventas Diarias: {{ total_sales_today }}</h6>
+                  </td>
+                </table>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% if download_url %}
+<script type="text/javascript">
+  window.onload = function () {
+    var link = document.createElement('a');
+    link.href = '{{ download_url }}';
+    link.download = 'boleta.pdf';
+    link.click();
+  };
+</script>
+{% endif %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="{% static 'js/buscar.js' %}"></script>
+<script src="{% static 'js/confirmcart.js' %}"></script>
+{% endblock %}

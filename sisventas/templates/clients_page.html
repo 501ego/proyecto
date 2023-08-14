@@ -1,0 +1,36 @@
+{% load static %} {% for client in clients %}
+<tr>
+  <th scope="row">{{ client.rut }}</th>
+  <td>{{ client.name }}</td>
+  <td>{{ client.last_name }}</td>
+  <td>{{ client.id_genre }}</td>
+  <td>{{ client.birth_date }}</td>
+  <td>{{ client.phone }}</td>
+  <td>{{ client.email }}</td>
+  <td>{{ client.company_name }}</td>
+  <td>{{ client.giro }}</td>
+  <td>{{ client.is_active|yesno:"Activo,Inactivo" }}</td>
+  <td>
+    <a
+      class="confirm-delete"
+      href="{% url 'sisventas:client_delete' client.rut %}"
+      data-id="{{ client.rut }}"
+    >
+      <img src="{% static '/img/trash3.svg' %}" />
+    </a>
+  </td>
+  <td>
+    <a
+      class="confirm-edit"
+      href="{% url 'sisventas:client_edit' client.rut %}"
+      data-id="{{ client.rut }}"
+    >
+      <img src="{% static '/img/pencil.svg' %}" />
+    </a>
+  </td>
+</tr>
+{% empty %}
+<tr>
+  <td colspan="6">No hay Clientes</td>
+</tr>
+{% endfor %}

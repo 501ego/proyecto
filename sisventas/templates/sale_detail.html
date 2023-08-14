@@ -1,0 +1,51 @@
+{% extends 'base.html' %} {% load static %} {% load extras %} {% block titulo %} Ventas {% endblock %} {% block contenido %} {% csrf_token %}
+
+<div class="container py-4">
+  <div class="p-5 mb-4 mt-3 rounded-4 shadow">
+    <div class="container-fluid">
+      <h3 class="text-center mb-2">Detalle de ventas</h3>
+      <table class="table table-striped border table-hover margin-auto">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>ID Venta</th>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Precio</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for detail in details %}
+          <tr>
+            <td>{{ detail.id_product_id }}</td>
+            {% if detail.original_sale_id == None %}
+            <th>{{ detail.id_sale_id }}</th>
+            {% else %}
+            <th>{{ detail.original_sale_id }}</th>
+            {% endif %} {% for product in products %} {% if product.id == detail.id_product_id %}
+            <td>{{ product.name }}</td>
+            {% endif %} {% endfor %}
+            <td>{{ detail.product_quantity }}</td>
+            <td>${{ detail.unit_price|clp }}</td>
+            <td>${{ detail.subtotal|clp }}</td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="6" class="text-center">No hay productos</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="d-flex justify-content-between">
+      <div class="d-flex align-items-center">
+        <a class="btn" href="{% url 'sisventas:return_page' %}">
+          <img src="{% static '/img/arrow-left-circle-fill.svg' %}" height="25px" width="25px" />
+        </a>
+      </div>
+      <h5 class="d-flex align-middle p-2">Total venta: ${{ total|clp }}</h5>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% load static %} {% load extras %} {% for product in products %}
+<tr class="custom-row">
+  <th class="align-middle" scope="row">{{ product.id }}</th>
+  <td class="align-middle">{{ product.name }}</td>
+  <td class="align-middle">
+    <div class="d-flex">
+      <span class="currency-symbol">$</span>
+      <span class="price-value">{{ product.unit_price|clp}}</span>
+    </div>
+  </td>
+  <td class="d-grid gap-2 d-md-flex justify-content-md-end align-middle">
+    <a href="{% url 'sisventas:add_cart' product.id %}" data-id="{{ product.id }}">
+      <img src="{% static '/img/plus-circle.svg' %}"
+    /></a>
+  </td>
+</tr>
+{% endfor %}

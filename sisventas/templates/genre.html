@@ -1,0 +1,92 @@
+{% extends 'base.html' %}{% load static %}{% block titulo %}Añadir Género{% endblock %} {% block navbar_vendedor %}
+<li class="nav-item">
+  <a class="btn" href="{% url 'sisventas:return_page' %}">Atrás</a>
+</li>
+{% endblock %} {% block contenido %} {% csrf_token %}
+
+<body>
+  <div class="container h-100">
+    <div class="position-static d-block p-4 py-md-5" tabindex="-1" role="dialog" id="modalSignin">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content rounded-4 shadow p-4">
+          <h5 class="fw-bold mb-0 fs-2 mb-3 text-center mt-2">Género</h5>
+          <table class="table table-hover" id="table-genre">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for genre in genres %}
+              <tr>
+                <td class="align-middle">{{ genre.id }}</td>
+                <td class="align-middle">{{ genre.description }}</td>
+                <td class="d-flex justify-content-center justify-content-end">
+                  <a class="delete-genre mx-3" href="{% url 'sisventas:genre_delete' genre.id %}">
+                    <img src="{% static '/img/trash3.svg' %}" />
+                  </a>
+                  <a class="edit-genre" href="{% url 'sisventas:genre_edit' genre.id %}">
+                    <img src="{% static '/img/pencil.svg' %}" />
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+
+            {% empty %}
+            <tr>
+              <td colspan="6">No hay géneros</td>
+            </tr>
+            {% endfor %}
+          </table>
+          <form method="post" id="genre-form">
+            {% csrf_token %}
+            <table class="table table-borderless">
+              <thead>
+                <tr>
+                  <th>Campo</th>
+                  <th>Valor</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for campo in form %}
+                <tr>
+                  <td class="align-middle">
+                    <label class="form-label"> {{ campo.label }}</label>
+                  </td>
+                  <td class="align-middle">
+                    <div class="input-genre">{{ campo }}</div>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            <div class="d-flex justify-content-center">
+              <div>
+                {% if edit_mode %}
+                <button type="submit" class="btn btn-success btn-sm mb-3 mx-2 update-genre">Actualizar Género</button>
+                {% else %}
+                <button type="submit" class="btn btn-success btn-sm mb-3 mx-2 add-genre">Ingresar Género</button>
+                {% endif %}
+              </div>
+              <div type="reset" value="reset" class="mx-2">
+                <a class="btn btn-danger btn-sm" id="reset-genre" href="{% url 'sisventas:genre' %}"> Limpiar Campos </a>
+              </div>
+            </div>
+          </form>
+          <div class="d-flex justify-content-start">
+            <a class="btn" href="{% url 'sisventas:return_page' %}">
+              <img src="{% static '/img/arrow-left-circle-fill.svg' %}" height="25px" width="25px" />
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="{% static 'js/confirmforms.js' %}"></script>
+</body>
+
+{% endblock %}

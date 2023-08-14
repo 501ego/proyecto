@@ -1,0 +1,14 @@
+{% load static %} {% load extras %} {% for register in registers %}
+<tr>
+  <th scope="row">{{ register.id }}</th>
+  <td>{{ register.rut_employee.rut }}</td>
+  <td>{{ register.rut_employee }}</td>
+  <td>{{ register.opening_time_sesion }}</td>
+  <td>{{ register.closing_time_sesion }}</td>
+  <td>{{ register.date }}</td>
+</tr>
+{% empty %}
+<tr>
+  <td colspan="6" class="text-center">No hay Registros</td>
+</tr>
+{% endfor %}

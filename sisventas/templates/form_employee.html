@@ -1,0 +1,140 @@
+{% extends 'base.html' %} {% load static %} {% block titulo %} Formulario Empleados {% endblock %} {% csrf_token %} {% block navbar_jefe_ventas %}
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:jefe_ventas' %}">Inicio</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:form_prod' %}">Inventario</a>
+</li>
+
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:form_employee' %}">Empleados</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:registro_empleados' %}">Registro de Empleados</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:sales_report' %}">Informe de Ventas</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:open_close' %}">Registro de Apertura y Cierre</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:sales_jefe_ventas' %}">Todas las Ventas</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:iva' %}">IVA</a>
+</li>
+{% load extras %} {% endblock %} {% block contenido %}
+<div>{% include 'auth.html' %}</div>
+
+<div class="container py-4">
+  <div class="mb-4 mt-3 rounded-4 shadow">
+    <div class="container-fluid">
+      <h6 class="fw-bold mb-5 fs-2 text-center">Empleados</h6>
+      <div class="row">
+        <div class="col">
+          <div class="search mb-2">
+            <input type="text" class="form-control" id="search-input" placeholder="Ingrese nombre del cliente" />
+          </div>
+          <table class="table table-striped table-hover border table-prod-invent" id="table-clients">
+            <thead>
+              <tr>
+                <th>Rut</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Género</th>
+                <th>Fecha Nac.</th>
+                <th>Teléfono</th>
+                <th>Email</th>
+                <th>Razon social</th>
+                <th>Giro</th>
+                <th>Estado</th>
+                <th>Perfil</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% include 'employee_list.html' %}
+            </tbody>
+          </table>
+        </div>
+        <div class="col">
+          <form enctype="multipart/form-data" method="post" class="confirm-employee" id="formEmployee">
+            {% csrf_token %}
+            <input type="hidden" id="isAuthorized" name="isAuthorized" />
+            <table class="table table-borderless">
+              <thead>
+                <tr>
+                  <th>Campo</th>
+                  <th>Valor</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for campo in form %}
+                <tr>
+                  <td>
+                    <label class="form-label">{{ campo.label }}<span class="text-danger">*</span></label>
+                  </td>
+                  <td class="align-middle">
+                    <div class="d-flex align-items-center gap-3">
+                      {% if campo.label == "Género" %}{{ campo }}
+                      <a href="{% url 'sisventas:genre' %}">
+                        <img src="{% static '/img/plus-circle.svg' %}" height="22px" width="22px" />
+                      </a>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-3">
+                      {% elif campo.label == "Región" %} {{ campo }}
+                      <a href="{% url 'sisventas:form_location' %}">
+                        <img src="{% static '/img/plus-circle.svg' %}" height="22px" width="22px" />
+                      </a>
+
+                      {% elif campo.label == "Ciudad" %} {{ campo }}
+                      <a href="{% url 'sisventas:form_location' %}">
+                        <img src="{% static '/img/plus-circle.svg' %}" height="22px" width="22px" />
+                      </a>
+                      {% elif campo.label == "Comuna" %} {{ campo }}
+                      <a href="{% url 'sisventas:form_location' %}">
+                        <img src="{% static '/img/plus-circle.svg' %}" height="22px" width="22px" />
+                      </a>
+                      </a>
+                      {% elif campo.label == "ID del perfil" %} {{ campo }}
+                      <a href="{% url 'sisventas:profile' %}">
+                        <img src="{% static '/img/plus-circle.svg' %}" height="22px" width="22px" />
+                      </a>
+                      {% else %} {{ campo }} {% endif %}
+                    </div>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            <div class="d-flex justify-content-center">
+              <div type="submit" class="btn">
+                {% if edit_mode %}
+                <button class="btn btn-success btn-lg add-employee">Actualizar Empleado</button>
+                {% else %}
+                <button class="btn btn-success btn-lg add-employee">Ingresar Empleado</button>
+                {% endif %}
+              </div>
+              <div type="reset" value="reset" class="btn">
+                <a class="btn btn-danger btn-lg" id="reset-employee" href="{% url 'sisventas:form_employee' %}"> Limpiar Campos </a>
+              </div>
+            </div>
+          </form>
+          {% if messages %}
+          <div class="alert alert-danger">
+            <ul>
+              {% for message in messages %}
+              <li>{{ message }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

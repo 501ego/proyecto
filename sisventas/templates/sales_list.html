@@ -1,0 +1,19 @@
+{% load static %} {% load extras %} {% for sale in sales %}
+<tr>
+  <th scope="row">{{ sale.id }}</th>
+  <td>{{ sale.document }}</td>
+  <td>{{ sale.date }}</td>
+  <td>{{ sale.hour }}</td>
+  <td>${{ sale.total|clp }}</td>
+  <td>{{ sale.client }}</td>
+  <td>{{ sale.seller }}</td>
+  <td class="d-grid gap-2 d-md-flex align-middle justify-content-end">
+    <a href="{% url 'sisventas:document' sale.id %}" data-id="{{ sale.id }}" id="print"> <img src="{% static '/img/printer-fill.svg' %}" /></a>
+    <a href="{% url 'sisventas:sale_detail' sale.id %}" data-id="{{ sale.id }}"> <img src="{% static '/img/three-dots-vertical.svg' %}" /></a>
+  </td>
+</tr>
+{% empty %}
+<tr>
+  <td colspan="6" class="text-center">No hay Ventas</td>
+</tr>
+{% endfor %}

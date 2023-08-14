@@ -1,0 +1,75 @@
+{% extends 'base.html' %} {% load static %} {% load extras %} {% block navbar_vendedor %}
+<li class="nav-item">
+  <a class="nav-link active" aria-current="page" href="{% url 'sisventas:pos_system' %}"> Sistema de Venta </a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:form_client' %}">Clientes</a>
+</li>
+
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:sales_vendedor' %}">Ventas Empleado</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:refund' %}">Reembolso</a>
+</li>
+{% endblock %} {% block titulo %} Ventas {% endblock%} {%block contenido%} {% csrf_token %}
+<main>
+  <div class="container py-4">
+    <div class="p-5 mb-4 mt-3 rounded-4 shadow">
+      <div class="container-fluid">
+        <h3 class="text-center">Lista de Ventas</h3>
+        <div class="search">
+          <input type="text" class="form-control" id="search-input-sale" placeholder="Ingrese ID de Boleta o nombre de Cliente" />
+        </div>
+        <table class="table table-hover" id="table-sales">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Documento</th>
+              <th>Fecha</th>
+              <th>Hora</th>
+              <th>Total</th>
+              <th>Cliente</th>
+              <th>Vendedor</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% include 'sales_list.html' %}
+          </tbody>
+        </table>
+        <div class="pagination justify-content-center">
+          <ul class="pagination pagination-sm">
+            {% if sales.has_previous %}
+            <li class="page-item">
+              <a class="page-link" href="?page=1">&laquo; first</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="?page={{ sales.previous_page_number }}">previous</a>
+            </li>
+            {% endif %}
+
+            <li class="page-item active" aria-current="page">
+              <span class="page-link"> Page {{ sales.number }} of {{ sales.paginator.num_pages }}. </span>
+            </li>
+
+            {% if sales.has_next %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ sales.next_page_number }}">next</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="?page={{ sales.paginator.num_pages }}">last &raquo;</a>
+            </li>
+            {% endif %}
+          </ul>
+        </div>
+        <td>
+          <h6 class="d-flex justify-content-end">Monto Caja: <span>${{ total|clp }}</span></h6>
+        </td>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="{% static 'js/buscar.js' %}"></script>
+  <script src="{% static 'js/confirmmiscelaneo.js' %}"></script>
+</main>
+{% endblock %}

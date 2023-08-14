@@ -1,0 +1,36 @@
+# Ignora la carpeta del entorno virtual (reemplaza 'env' si tu carpeta tiene un nombre diferente)
+venv/
+
+# Ignora todos los archivos .pyc
+*.pyc
+
+# Ignora todos los archivos .pyo
+*.pyo
+
+# Ignora todos los archivos .egg-info
+*.egg-info
+
+# Ignora la base de datos SQLite si la estás utilizando
+*.sqlite3
+
+# Ignora archivos específicos de Django
+local_settings.py
+db.sqlite3
+
+# Ignora archivos específicos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Ignora archivos específicos de los editores
+.vscode/
+.idea/
+
+# Ignora los archivos generados durante la construcción y distribución
+build/
+dist/
+*.egg-info/
+MANIFEST
+
+# Ignora los archivos generados por Celery
+celerybeat-schedule
+celerybeat.pid

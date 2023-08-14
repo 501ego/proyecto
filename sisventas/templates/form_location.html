@@ -1,0 +1,236 @@
+{% extends 'base.html' %}{% load static %}{% block titulo %}Añadir Género{% endblock %} {% block navbar_vendedor %}
+<li class="nav-item">
+  <a class="btn" href="{% url 'sisventas:return_page' %}">Atrás</a>
+</li>
+
+{% endblock %} {% block contenido %} {% csrf_token %}
+
+<body>
+  <div class="position-static d-block p-4 py-md-5">
+    <div class="modal-content rounded-4 shadow">
+      <div class="container p-4">
+        <div class="row">
+          <div class="col">
+            <h5 class="fw-bold mb-0 fs-2 mb-3 text-center">Ciudades</h5>
+            <table class="table table table-hover table-prod-invent" id="table-ciudad">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nombre</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for ciudad in ciudades %}
+                <tr>
+                  <td class="align-middle">{{ ciudad.id }}</td>
+                  <td class="align-middle">{{ ciudad.name }}</td>
+                  <td class="d-flex justify-content-center justify-content-end">
+                    <a class="delete-ciudad mx-3" href="{% url 'sisventas:ciudad_delete' ciudad.id %}">
+                      <img src="{% static '/img/trash3.svg' %}" />
+                    </a>
+                    <a class="edit-ciudad" href="{% url 'sisventas:ciudad_edit' ciudad.id %}">
+                      <img src="{% static '/img/pencil.svg' %}" />
+                    </a>
+                  </td>
+                </tr>
+              </tbody>
+
+              {% empty %}
+              <tr>
+                <td colspan="6">No hay ciudades</td>
+              </tr>
+              {% endfor %}
+            </table>
+            <form method="post" id="ciudad-form">
+              {% csrf_token %}
+              <input type="hidden" name="form_type" value="ciudad" />
+              <table class="table table-borderless">
+                <thead>
+                  <tr>
+                    <th>Campo</th>
+                    <th>Valor</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for campo in form_ciudad %}
+                  <tr>
+                    <td class="align-middle">
+                      <label class="form-label"> {{ campo.label }}</label>
+                    </td>
+                    <td class="align-middle">
+                      <div class="input-ciudad">{{ campo }}</div>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+              <div class="d-flex justify-content-center">
+                <div>
+                  {% if edit_mode %}
+                  <button type="submit" class="btn btn-success btn-sm mb-3 mx-2 update-ciudad">Actualizar Ciudad</button>
+                  {% else %}
+                  <button type="submit" class="btn btn-success btn-sm mb-3 mx-2 add-ciudad">Ingresar Ciudad</button>
+                  {% endif %}
+                </div>
+                <div type="reset" value="reset" class="mx-2">
+                  <a class="btn btn-danger btn-sm" id="reset-ciudad" href="{% url 'sisventas:form_location' %}"> Limpiar Campos </a>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="col">
+            <h5 class="fw-bold mb-0 fs-2 mb-3 text-center">Comunas</h5>
+            <table class="table table-hover table-prod-invent" id="table-comuna">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nombre</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for comuna in comunas %}
+                <tr>
+                  <td class="align-middle">{{ comuna.id }}</td>
+                  <td class="align-middle">{{ comuna.name }}</td>
+                  <td class="d-flex justify-content-center justify-content-end">
+                    <a class="delete-comuna mx-3" href="{% url 'sisventas:comuna_delete' comuna.id %}">
+                      <img src="{% static '/img/trash3.svg' %}" />
+                    </a>
+                    <a class="edit-comuna" href="{% url 'sisventas:comuna_edit' comuna.id %}">
+                      <img src="{% static '/img/pencil.svg' %}" />
+                    </a>
+                  </td>
+                </tr>
+              </tbody>
+
+              {% empty %}
+              <tr>
+                <td colspan="6">No hay comunas</td>
+              </tr>
+              {% endfor %}
+            </table>
+            <form method="post" id="comuna-form">
+              {% csrf_token %}
+              <input type="hidden" name="form_type" value="comuna" />
+              <table class="table table-borderless">
+                <thead>
+                  <tr>
+                    <th>Campo</th>
+                    <th>Valor</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for campo in form_comuna %}
+                  <tr>
+                    <td class="align-middle">
+                      <label class="form-label"> {{ campo.label }}</label>
+                    </td>
+                    <td class="align-middle">
+                      <div class="input-comuna">{{ campo }}</div>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+              <div class="d-flex justify-content-center">
+                <div>
+                  {% if edit_mode %}
+                  <button type="submit" class="btn btn-success btn-sm mb-3 mx-2 update-comuna">Actualizar comuna</button>
+                  {% else %}
+                  <button type="submit" class="btn btn-success btn-sm mb-3 mx-2 add-comuna">Ingresar comuna</button>
+                  {% endif %}
+                </div>
+                <div type="reset" value="reset" class="mx-2">
+                  <a class="btn btn-danger btn-sm" id="reset-comuna" href="{% url 'sisventas:form_location' %}"> Limpiar Campos </a>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="row mt-4">
+            <div class="col">
+              <h5 class="fw-bold mb-0 fs-2 mb-3 text-center">Regiones</h5>
+              <table class="table table-hover table-prod-invent" id="table-region">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for region in regions %}
+                  <tr>
+                    <td class="align-middle">{{ region.id }}</td>
+                    <td class="align-middle">{{ region.name }}</td>
+                    <td class="d-flex justify-content-center justify-content-end">
+                      <a class="delete-region mx-3" href="{% url 'sisventas:region_delete' region.id %}">
+                        <img src="{% static '/img/trash3.svg' %}" />
+                      </a>
+                      <a class="edit-region" href="{% url 'sisventas:region_edit' region.id %}">
+                        <img src="{% static '/img/pencil.svg' %}" />
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+
+                {% empty %}
+                <tr>
+                  <td colspan="6">No hay Regiones</td>
+                </tr>
+                {% endfor %}
+              </table>
+              <form method="post" id="region-form">
+                {% csrf_token %}
+                <input type="hidden" name="form_type" value="region" />
+                <table class="table table-borderless">
+                  <thead>
+                    <tr>
+                      <th>Campo</th>
+                      <th>Valor</th>
+                    </tr>
+                  </thead>
+                  <tbody class>
+                    {% for campo in form_region %}
+                    <tr>
+                      <td class="align-middle">
+                        <label class="form-label"> {{ campo.label }}</label>
+                      </td>
+                      <td class="align-middle">
+                        <div class="input-region">{{ campo }}</div>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+                <div class="d-flex justify-content-center">
+                  <div>
+                    {% if edit_mode %}
+                    <button type="submit" class="btn btn-success btn-sm mb-3 mx-2 update-region">Actualizar Región</button>
+                    {% else %}
+                    <button type="submit" class="btn btn-success btn-sm mb-3 mx-2 add-region">Ingresar Región</button>
+                    {% endif %}
+                  </div>
+                  <div type="reset" value="reset" class="mx-2">
+                    <a class="btn btn-danger btn-sm" id="reset-region" href="{% url 'sisventas:form_location' %}"> Limpiar Campos </a>
+                  </div>
+                </div>
+              </form>
+              <div class="d-flex justify-content-start">
+                <a class="btn" href="{% url 'sisventas:return_page' %}">
+                  <img src="{% static '/img/arrow-left-circle-fill.svg' %}" height="25px" width="25px" />
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="{% static 'js/confirmforms.js' %}"></script>
+</body>
+
+{% endblock %}

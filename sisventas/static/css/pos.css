@@ -1,0 +1,71 @@
+div:where(.swal2-icon) {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.swal-confirm-button {
+    background-color: #1ba11b !important;
+    
+  }
+.swal-confirm-button:focus {
+    box-shadow: none !important;
+  }
+  .swal-cancel-button {
+    background-color: #f84545 !important;
+    
+  }
+  .swal-cancel-button:focus {
+    box-shadow: none !important;
+  }
+  .custom-row th,
+  .custom-row td {
+    height: 50px;
+  }
+
+  .btn-success {
+    background-color: #1ba11b ;
+    border-color: #1ba11b ;
+  }
+  .btn-success:hover {
+    background-color: #187e18 ;
+    border-color: #187e18 ;
+  }
+  .btn-danger {
+    background-color: #f84545 ;
+    border-color: #f84545 ;
+  }
+  .text-danger {
+    color: #f84545!important;
+  }
+  .text-success {
+    color: #1ba11b!important;
+  }
+  a img {
+    pointer-events: none!important;
+}
+.table-dark {
+  color: #fff;
+  background-color: #121518;
+}
+
+table  tr:hover {
+  cursor: pointer;
+}
+.page-link {
+  color: black!important;
+  border-color: rgb(23, 23, 24)!important;
+}
+.page-item.active .page-link {
+  z-index: 1;
+  color: #ffffff!important;
+  background-color: #11161b!important;
+  border-color: #11161b!important;
+}
+.page-link:focus {
+  box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);
+}
+
+body {
+  font-family: 'Sora', sans-serif;
+  font-family: 'Open Sans', sans-serif;
+}

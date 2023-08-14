@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load extras %}
+
+{% block navbar_vendedor %}
+<li class="nav-item">
+  <a class="nav-link active" aria-current="page" href="{% url 'sisventas:pos_system' %}"> Sistema de Venta </a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:form_client' %}">Clientes</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:sales_vendedor' %}">Ventas Empleado</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:refund' %}">Reembolso</a>
+</li>
+{% endblock %} 
+
+{% block titulo %} Sistema de Reembolso {% endblock %} 
+
+{% block contenido %}
+{% csrf_token %}
+<main>
+  <div class="position-static d-block py-md-5">
+    <div class="modal-content rounded-4 shadow">
+      <div class="container p-4">
+        <div class="row align-items-center justify-content-center">
+          <h5 class="fw-bold mb-2 fs-2 text-center">Sistema de reembolso y Cambio de Producto</h5>
+          <div class="col-sm-5">
+            <form method="post" action="{% url 'sisventas:refund' %}">
+              {% csrf_token %}
+              <div>
+                <input type="number" class="form-control rounded-3" name="sale_id" value="{{ request.POST.sale_id }}" />
+                <p class="text-body-secondary text-center">Ingrese el ID de la venta</p>
+              </div>
+              <button class="w-100 mb-2 btn btn-dark rounded-3 idSearched" type="submit">Buscar</button>
+            </form>
+            <form method="post" action="{% url 'sisventas:delete_sale_id' %}">
+              {% csrf_token %}
+              <button type="submit" class="w-100 mb-2 btn btn-dark rounded-3">Limpiar</button>
+            </form>
+          </div>
+          <div class="row align-items-center justify-content-center">
+          <div class="col-sm-6">
+            {% include 'auth.html' %}
+            {% if sale_id %}
+              <form id="change" method="post" action="{% url 'sisventas:change_product' sale_id=sale_id %}">
+            {% else %}
+              <form id="change" method="post" action="{% url 'sisventas:change_product_no_id' %}">
+            {% endif %}
+              {% csrf_token %}
+              {% for data in product_data %}
+                <div class="item-group_change">
+                  <div>
+                    <input type="hidden" name="item_ids" value="{{ data.id }}" />
+                    <input type="checkbox" class="form-check-input mb-2 item-input" name="checked_items" value="{{ data.id }}" />
+                    {{ data.product }}
+                  </div>
+                  <input
+                    type="number"
+                    class="form-control rounded-3 item-input"
+                    name="quantity"
+                    min="1"
+                    max="{{ data.quantity }}"
+                    data-quantity="{{ data.quantity }}"
+                  />
+                  <p class="text-body-secondary text-center">Ingrese la cantidad, esta no debe superar la cantidad ({{data.quantity }})</p>
+                </div>
+              {% endfor %}
+              <hr class="my-2" />
+              <input type="hidden" id="isAuthorized" name="isAuthorized" />
+              <button id="change-submit" class="w-100 mb-2 btn btn-dark rounded-3 change" type="submit">Cambio o Reembolso de Producto</button>
+              <p class="text-body-secondary text-center">Ingrese los datos en los campos necesarios para realizar el Cambio.</p>
+            </form>
+          </div>
+          <div class="col-sm-6">
+            <table class="table table-hover border" id="table-summary">
+              <thead>
+                <tr class="">
+                  <th>Nombre</th>
+                  <th>Cantidad</th>
+                  <th>Precio</th>
+                  <th>Subtotal</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="sell-summary">
+                {% if request.session.cart %}
+                  {% for item in request.session.cart.values %}
+                    <tr>
+                      <td class="align-middle">{{ item.name }}</td>
+                      <td class="align-middle">
+                        {% if item.product_id %}
+                          <form id="update_cart_{{ item.product_id }}" action="{% url 'sisventas:update_cart' item.product_id %}" method="post">
+                            {% csrf_token %}
+                            <input
+                              type="number"
+                              name="quantity"
+                              min="1"
+                              max="99"
+                              value="{{ item.quantity }}"
+                              class="form-control form-control-sm update-quantity"
+                              data-product-id="{{ item.product_id }}"
+                            />
+                          </form>
+                        {% endif %}
+                      </td>
+                      <td class="align-middle">
+                        <div class="d-flex">
+                          <span class="currency-symbol">$</span>
+                          <span class="price-value">{{ item.price|clp }}</span>
+                        </div>
+                      </td>
+                      <td class="align-middle">
+                        <div class="d-flex">
+                          <span class="currency-symbol">$</span>
+                          <span class="price-value">{{ item.subtotal|clp }}</span>
+                        </div>
+                      </td>
+                      {% if item.product_id %}
+                        <td class="align-middle">
+                          <a href="{% url 'sisventas:remove_cart' item.product_id %}" class="delete-item" data-id="{{ item.product_id }}">
+                            <img src="{% static '/img/trash3.svg' %}" />
+                          </a>
+                        </td>
+                      {% endif %}
+                    </tr>
+                  {% endfor %}
+                {% else %}
+                  <tr>
+                    <td colspan="5">No hay productos en el carrito.</td>
+                  </tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+          </div>
+        </div>
+        <div class="row mt-4">
+          <div class="col">
+            <div class="search">
+              <input type="text" class="form-control" id="search-input-change" placeholder="Ingrese nombre del producto" />
+            </div>
+            <table class="table table-striped table-hover table-prod-invent" id="table-changes">
+              <thead>
+                <tr>
+                  <th>Código</th>
+                  <th>Nombre</th>
+                  <th>Precio Unitario</th>
+                  <th>Disponible</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% include 'products_page.html' %}
+              </tbody>
+            </table>
+            <div class="pagination justify-content-center">
+              <ul class="pagination pagination-sm">
+                {% if products.has_previous %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page=1">&laquo; first</a>
+                  </li>
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ products.previous_page_number }}">previous</a>
+                  </li>
+                {% endif %}
+
+                <li class="page-item active" aria-current="page">
+                  <span class="page-link"> Page {{ products.number }} of {{ products.paginator.num_pages }}. </span>
+                </li>
+
+                {% if products.has_next %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ products.next_page_number }}">next</a>
+                  </li>
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ products.paginator.num_pages }}">last &raquo;</a>
+                  </li>
+                {% endif %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% if download_url %}
+    <script type="text/javascript">
+      window.onload = function () {
+        var link = document.createElement('a');
+        link.href = '{{ download_url }}';
+        link.download = 'boleta.pdf';
+        link.click();
+      };
+    </script>
+    {% endif %}
+    <script src="{% static 'js/buscar.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{% static 'js/confirmmiscelaneo.js' %}"></script>
+  </div>
+</main>
+{% endblock %}
+
+
+
+

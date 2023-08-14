@@ -1,0 +1,167 @@
+{% extends 'base.html' %} {% load static %} {% load extras %} {% block navbar_jefe_ventas %}
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:jefe_ventas' %}">Inicio</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:form_prod' %}">Inventario</a>
+</li>
+
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:form_employee' %}">Empleados</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:registro_empleados' %}">Registro de Empleados</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:sales_report' %}">Informe de Ventas</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:open_close' %}">Registro de Apertura y Cierre</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:sales_jefe_ventas' %}">Todas las Ventas</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'sisventas:iva' %}">IVA</a>
+</li>
+{% endblock %} {% block titulo %} Ventas {% endblock%} {%block contenido%} {% csrf_token %}
+
+<div class="container py-4">
+  <div class="p-5 mb-4 mt-3 rounded-4 shadow">
+    <div class="container-fluid">
+      <h5 class="fw-bold mb-4 fs-2 text-center">Estadísticas de Venta</h5>
+      <div class="row justify-content-center">
+        <div class="col-sm-9">
+          <table class="table table-borderless mb-5">
+            <thead>
+              <tr>
+                <th scope="col">Ventas del día</th>
+                <th scope="col">Ventas de la semana</th>
+                <th scope="col">Ventas del mes</th>
+                <th scope="col">Ventas del año</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{{ sales_today|clp }}</td>
+                <td>{{ sales_week|clp }}</td>
+                <td>{{ sales_month|clp }}</td>
+                <td>{{ sales_year|clp }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <hr />
+      </div>
+      <table class="table table-borderless mb-5">
+        <thead>
+          <tr>
+            <th scope="col">Monto del día</th>
+            <th scope="col">Monto de la semana</th>
+            <th scope="col">Monto del mes</th>
+            <th scope="col">Monto del año</th>
+            <th scope="col">Vendedor más rentable</th>
+            <th scope="col">Monto vendido</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>${{ total_amount_today|clp }}</td>
+            <td>${{ total_amount_week|clp }}</td>
+            <td>${{ total_amount_month|clp }}</td>
+            <td>{{ total_amount_year|clp }}</td>
+            <td>{{ most_profitable_seller }}</td>
+            <td>${{ most_profitable_amount|clp }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <hr />
+      <table class="table table-borderless mb-5">
+        <thead>
+          <tr>
+            <th scope="col">Producto más vendido</th>
+            <th scope="col">Monto del producto más vendido</th>
+            <th scope="col">Cantidad del producto más vendido</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{ best_selling_product.name }}</td>
+            <td>${{ best_selling_product_amount|clp }}</td>
+            <td>{{ best_selling_product_quantity|clp }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <hr />
+      <h5 class="fw-bold mb-2 fs-2 text-center">10 productos más vendidos</h5>
+      <table class="table table-hover table-borderless mt-3">
+        <thead>
+          <tr>
+            <th scope="col">Rut</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Número de ventas</th>
+            <th scope="col">Monto total Ventas</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for prod in top_10_products %}
+          <tr>
+            <td>{{ prod.id_product_id }}</td>
+            <td>{{ prod.id_product__name }}</td>
+            <td>{{ prod.total_quantity|clp }}</td>
+            <td>${{ prod.total_sales|clp }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <h5 class="fw-bold mb-2 fs-2 text-center">Rendimiento de empleados</h5>
+      <table class="table table-hover table-borderless mt-3">
+        <thead>
+          <tr>
+            <th scope="col">Rut</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Número de ventas</th>
+            <th scope="col">Monto total Ventas</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for sale in sales %}
+          <tr>
+            <td>{{ sale.rut }}</td>
+            <td>{{ sale.seller }}</td>
+            <td>{{ sale.num_sales|clp }}</td>
+            <td>${{ sale.total_sales|clp }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <div class="pagination justify-content-center">
+        <ul class="pagination pagination-sm">
+          {% if sales.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page=1">&laquo; first</a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?page={{ sales.previous_page_number }}">previous</a>
+          </li>
+          {% endif %}
+
+          <li class="page-item active" aria-current="page">
+            <span class="page-link"> Page {{ sales.number }} of {{ sales.paginator.num_pages }}. </span>
+          </li>
+
+          {% if sales.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ sales.next_page_number }}">next</a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?page={{ sales.paginator.num_pages }}">last &raquo;</a>
+          </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
